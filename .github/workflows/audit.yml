@@ -1,0 +1,37 @@
+name: Auditoría ARCHIVO 2031
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  auditoria:
+    name: Estructura, enlaces y accesibilidad
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Marcadores de conflicto sin resolver
+        run: |
+          if grep -rInE '^(<{7}|={7}|>{7})( |$)' \
+               --include='*.html' --include='*.css' --include='*.js' \
+               --include='*.md' --include='*.txt' \
+               --exclude-dir=bitacora . ; then
+            echo "::error::Hay marcadores de conflicto de Git sin resolver."
+            exit 1
+          fi
+          echo "Sin marcadores de conflicto."
+
+      - name: Auditoría estructural
+        run: python3 scripts/audit.py
+
+      - name: Autocomprobación del equipo (informativa)
+        continue-on-error: true
+        run: python3 scripts/autocheck.py
