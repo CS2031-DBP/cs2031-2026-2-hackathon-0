@@ -26,7 +26,8 @@ import urllib.request
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-TOTAL_FRAGMENTOS = 6
+FRAGMENTOS_SELLO = 4
+BONUS = (5, 6)
 
 VERDE, ROJO, GRIS, RESET = "\033[32m", "\033[31m", "\033[90m", "\033[0m"
 if not sys.stdout.isatty():
@@ -85,9 +86,11 @@ ultima = auditoria.stdout.strip().splitlines()
 check(auditoria.returncode == 0, "scripts/audit.py pasa", ultima[-1] if ultima else "")
 
 # --- 3. Archivos recuperados --------------------------------------------------
-for i in range(1, TOTAL_FRAGMENTOS + 1):
+for i in range(1, FRAGMENTOS_SELLO + 1):
     rel = f"bitacora/frag-{i:02d}.txt"
     check((RAIZ / rel).exists(), f"{rel} presente")
+
+bonus_hechos = [i for i in BONUS if (RAIZ / f"bitacora/frag-{i:02d}.txt").exists()]
 
 for rel in ("styles/crt.css", "assets/sello.svg"):
     check((RAIZ / rel).exists(), f"{rel} recuperado")
@@ -108,9 +111,9 @@ ranuras = re.findall(
 )
 llenas = [(n, w.strip().upper()) for n, w in ranuras if w.strip() and w.strip() != "???"]
 check(
-    len(llenas) == TOTAL_FRAGMENTOS,
-    f"las {TOTAL_FRAGMENTOS} ranuras de index.html están llenas",
-    f"llenas: {len(llenas)}/{TOTAL_FRAGMENTOS}",
+    len(llenas) == FRAGMENTOS_SELLO,
+    f"las {FRAGMENTOS_SELLO} ranuras de index.html están llenas",
+    f"llenas: {len(llenas)}/{FRAGMENTOS_SELLO}",
 )
 
 # --- 5. Sello -----------------------------------------------------------------
@@ -127,7 +130,7 @@ check(
 
 orden = [w for _, w in sorted(llenas, key=lambda t: t[0])]
 check(
-    len(llenas) == TOTAL_FRAGMENTOS and sello_ok and "-".join(orden) == sello,
+    len(llenas) == FRAGMENTOS_SELLO and sello_ok and "-".join(orden) == sello,
     "las ranuras coinciden con SELLO.txt",
 )
 
@@ -136,9 +139,9 @@ informe = leer("bitacora/INFORME.md")
 citados = len(set(re.findall(r"FRAG-0[1-6]", informe.upper())))
 comandos = len(re.findall(r"git\s+[a-z-]+", informe))
 check(
-    citados == TOTAL_FRAGMENTOS and comandos >= 7,
-    "INFORME.md documenta los 6 fragmentos con su comando",
-    f"fragmentos: {citados}/6, comandos: {comandos}",
+    citados >= FRAGMENTOS_SELLO and comandos >= 5,
+    "INFORME.md documenta cada hallazgo con su comando",
+    f"fragmentos citados: {citados}/{FRAGMENTOS_SELLO}, comandos: {comandos}",
 )
 
 # --- 7. Entrega ---------------------------------------------------------------
@@ -148,11 +151,8 @@ check(
     f"existe la etiqueta ANOTADA {tag}",
     "una etiqueta ligera no cuenta",
 )
-check(
-    bool([l for l in git("for-each-ref", "--format=%(refname)").splitlines()
-          if l.startswith("refs/notes/")]),
-    "dejaron una nota de Git propia",
-)
+hay_notas = bool([l for l in git("for-each-ref", "--format=%(refname)").splitlines()
+                  if l.startswith("refs/notes/")])
 
 # --- 8. GitHub ----------------------------------------------------------------
 MIN_PR = 6
@@ -226,6 +226,9 @@ for ok, titulo, ayuda in resultados:
 
 logrados = sum(1 for ok, _, _ in resultados if ok)
 completo = logrados == len(resultados)
+extras = [f"FRAG-{i:02d}" for i in bonus_hechos] + (["nota de Git"] if hay_notas else [])
+if extras:
+    print(f"  {GRIS}+ bonus conseguido: {', '.join(extras)}{RESET}")
 print("  " + "─" * 56)
 print(f"  {logrados}/{len(resultados)} comprobaciones superadas")
 
