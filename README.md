@@ -90,19 +90,23 @@ Cuando las cuatro palabras estén en su sitio, la terminal se sella sola y su es
 - Cada integrante trabaja en **su propia rama** y abre un **PR** para que otro lo revise y acepte. **Nadie se auto-aprueba.**
 - Esperamos **al menos 4 PR mergeados**. Los conflictos se resuelven en equipo, **no individualmente**.
 
-Y lo primero de todo: **declaren su letra de equipo** en `index.html`.
+Y lo primero de todo, ya dentro de su clon: **averigüen cuál es su cinta**.
 
-```html
-<meta name="equipo" content="C" />
+```bash
+python3 scripts/micinta.py
 ```
 
-Se las da el equipo docente. Esa letra decide cuál es su cinta y contra qué se corrigen: cada equipo tiene palabras distintas, así que copiarle a otro equipo es fallar con pasos extra.
+Ese comando mira el nombre de **su** repositorio, deduce qué cinta le toca y lo anota en el `<meta name="equipo">` de `index.html`. Commiteen ese cambio: es lo que decide contra qué se les corrige.
+
+No hay nada que pedirle a nadie ni que esperar. Cada repositorio tiene su propia cinta con palabras distintas, siempre la misma, y se deduce sola. Cambiarla a mano para que coincida con la de otro equipo se detecta y anula la entrega.
 
 ---
 
 ## ✅ Checklist del equipo (issues a crear por el líder)
 
 ### #1 — Montar la cinta
+
+Si todavía no lo hicieron, corran `python3 scripts/micinta.py` para saber cuál de las cintas es la suya.
 
 Lean `incidente/LEEME.md`. Un **git bundle** es un repositorio entero dentro de un solo archivo: commits, ramas, etiquetas y todo lo demás. Git lo trata como si fuera un remoto, así que se le puede hacer `fetch`.
 
@@ -357,6 +361,7 @@ Córranlo cada vez que mergeen algo. Es un subconjunto de la corrección oficial
 >
 > - `scripts/audit.py`
 > - `scripts/autocheck.py`
+> - `scripts/micinta.py`
 > - `scripts/sello.js`
 > - `scripts/claves.json`
 > - `incidente/*.bundle`
@@ -391,8 +396,8 @@ Son pocas y son claras:
 - Squash de los PR de los compañeros (aplasta su autoría).
 - Escribir los fragmentos a mano sin recuperarlos. Se comparan **línea a línea**, incluido el `codigo` aleatorio.
 - Auto-aprobarse los PR.
-- Usar la cinta de otro equipo.
-- Modificar `scripts/audit.py`, `scripts/autocheck.py`, `scripts/sello.js`, `scripts/claves.json` o cualquier `.bundle`.
+- Modificar cualquier archivo de `scripts/` o cualquier `.bundle`.
+- Cambiar a mano la letra del equipo para usar la cinta de otro.
 
 ---
 
