@@ -155,7 +155,7 @@ hay_notas = bool([l for l in git("for-each-ref", "--format=%(refname)").splitlin
                   if l.startswith("refs/notes/")])
 
 # --- 8. GitHub ----------------------------------------------------------------
-MIN_PR = 6
+MIN_PR = CLAVES["min_prs"]
 omitido_github = ""
 
 

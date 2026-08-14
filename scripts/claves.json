@@ -1,5 +1,6 @@
 {
   "tag_entrega": "v1.0.0",
+  "min_prs": 4,
   "equipos": {
     "A": "c54e25fdd91d5bdf25bc9a1809fe3eda22b4d8f1dfb0f2e7a609ded336cc78f5",
     "B": "84870e583214818208273e37838d6e8254c1e2b4817c7a30f4305cdaceee4251",
