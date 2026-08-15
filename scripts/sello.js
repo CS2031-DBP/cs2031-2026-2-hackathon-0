@@ -48,7 +48,7 @@
       return;
     }
     if (!sello || sello === "???") {
-      estado("", "Sello sin escribir · " + llenas.length + "/4 ranuras completas.");
+      estado("", "Sello sin escribir · " + llenas.length + "/2 ranuras completas.");
       return;
     }
 
@@ -69,7 +69,7 @@
         } else {
           estado(
             "sello__estado--error",
-            "✗ Sello incorrecto. Revisa el orden y la ortografía de las 4 palabras."
+            "✗ Sello incorrecto. Revisa el orden y la ortografía de las 2 palabras."
           );
         }
       })

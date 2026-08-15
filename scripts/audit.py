@@ -17,11 +17,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 INDEX = RAIZ / "index.html"
 BASE_CSS = RAIZ / "styles" / "base.css"
 
-ARCHIVOS_PROHIBIDOS = [
-    "vendor/tracker.js",
-    "vendor/pixel.js",
-    "promo.html",
-]
+ARCHIVOS_PROHIBIDOS = ["vendor/tracker.js"]
 
 fallas: list[str] = []
 

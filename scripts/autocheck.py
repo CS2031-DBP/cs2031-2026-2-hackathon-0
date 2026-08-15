@@ -26,8 +26,7 @@ import urllib.request
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
-FRAGMENTOS_SELLO = 4
-BONUS = (5, 6)
+FRAGMENTOS_SELLO = 2
 
 VERDE, ROJO, GRIS, RESET = "\033[32m", "\033[31m", "\033[90m", "\033[0m"
 if not sys.stdout.isatty():
@@ -90,16 +89,12 @@ for i in range(1, FRAGMENTOS_SELLO + 1):
     rel = f"bitacora/frag-{i:02d}.txt"
     check((RAIZ / rel).exists(), f"{rel} presente")
 
-bonus_hechos = [i for i in BONUS if (RAIZ / f"bitacora/frag-{i:02d}.txt").exists()]
-
-for rel in ("styles/crt.css", "assets/sello.svg"):
-    check((RAIZ / rel).exists(), f"{rel} recuperado")
+check((RAIZ / "assets" / "sello.svg").exists(), "assets/sello.svg recuperado")
 
 check((RAIZ / "bitacora" / "SELLO.txt").exists(), "bitacora/SELLO.txt existe")
 check((RAIZ / "bitacora" / "INFORME.md").exists(), "bitacora/INFORME.md existe")
 
 # --- 4. index.html ------------------------------------------------------------
-check("styles/crt.css" in html, "index.html enlaza styles/crt.css")
 relleno = ("NOMBRE PENDIENTE", "ROL PENDIENTE", "usuario-github-", "Fotografía pendiente")
 check(
     not any(marca in html for marca in relleno),
@@ -151,8 +146,7 @@ check(
     f"existe la etiqueta ANOTADA {tag}",
     "una etiqueta ligera no cuenta",
 )
-hay_notas = bool([l for l in git("for-each-ref", "--format=%(refname)").splitlines()
-                  if l.startswith("refs/notes/")])
+
 
 # --- 8. GitHub ----------------------------------------------------------------
 MIN_PR = CLAVES["min_prs"]
@@ -169,9 +163,9 @@ def gh(ruta: str):
 
 m_slug = re.search(r"github\.com[:/]+([^/]+/[^/.]+)", git("remote", "get-url", "origin"))
 if not m_slug:
-    omitido_github = "no hay un remoto de GitHub configurado"
+    omitido_github = "Este repositorio no tiene un remoto de GitHub configurado."
 elif not shutil.which("gh"):
-    omitido_github = "la CLI gh no está instalada (https://cli.github.com)"
+    omitido_github = "No tienen instalada la CLI de GitHub (gh)."
 else:
     slug = m_slug.group(1)
     try:
@@ -214,7 +208,7 @@ else:
                 vivo = False
         check(vivo, "GitHub Pages publicado y respondiendo", url or "Pages no está activo")
     except RuntimeError as exc:
-        omitido_github = f"gh no pudo consultar {slug}: {exc}"
+        omitido_github = f"La CLI de GitHub no pudo consultar {slug}: {exc}"
 
 # --- Reporte ------------------------------------------------------------------
 print(f"\n  ARCHIVO 2031 · autocomprobación — equipo {equipo}")
@@ -226,15 +220,16 @@ for ok, titulo, ayuda in resultados:
 
 logrados = sum(1 for ok, _, _ in resultados if ok)
 completo = logrados == len(resultados)
-extras = [f"FRAG-{i:02d}" for i in bonus_hechos] + (["nota de Git"] if hay_notas else [])
-if extras:
-    print(f"  {GRIS}+ bonus conseguido: {', '.join(extras)}{RESET}")
 print("  " + "─" * 56)
 print(f"  {logrados}/{len(resultados)} comprobaciones superadas")
 
 if omitido_github:
-    print(f"  {ROJO}⚠ GitHub sin revisar{RESET}: {omitido_github}")
-    print(f"  {GRIS}  Faltan por comprobar: PRs mergeados, revisión cruzada y Pages.{RESET}")
+    print()
+    print(f"  {ROJO}⚠ No puedo evaluarlos por completo.{RESET}")
+    print(f"    {omitido_github}")
+    print(f"    {GRIS}Sin la CLI de GitHub no puedo comprobar tres cosas que SÍ puntúan:{RESET}")
+    print(f"    {GRIS}PRs mergeados, revisión cruzada y GitHub Pages.{RESET}")
+    print(f"    {GRIS}Instálenla en https://cli.github.com y hagan `gh auth login`.{RESET}")
     completo = False
 
 print()
