@@ -1,6 +1,7 @@
 {
   "tag_entrega": "v1.0.0",
   "min_prs": 3,
+  "min_comandos_informe": 4,
   "equipos": {
     "A": "9d7e069b01adec2714b37b8e3767c42e597eca1f002d9237e4ba782d5fae6fb9",
     "B": "4eb273fc55323f4e03aaef3fd01fb74143add1952eae6f5dfd2d7ff0b71998e1",

@@ -17,8 +17,6 @@ RAIZ = Path(__file__).resolve().parent.parent
 INDEX = RAIZ / "index.html"
 BASE_CSS = RAIZ / "styles" / "base.css"
 
-ARCHIVOS_PROHIBIDOS = ["vendor/tracker.js"]
-
 fallas: list[str] = []
 
 
@@ -60,11 +58,6 @@ def revisar_accesibilidad_css(css: str) -> None:
         fallas.append("styles/base.css ya no define estilos de :focus-visible")
 
 
-def revisar_archivos_prohibidos() -> None:
-    for relativo in ARCHIVOS_PROHIBIDOS:
-        if (RAIZ / relativo).exists():
-            fallas.append(f"archivo contaminado presente: {relativo}")
-
 
 def main() -> int:
     if not INDEX.exists():
@@ -76,7 +69,6 @@ def main() -> int:
     revisar_scripts_externos(html)
     revisar_imagenes(html)
     revisar_marcadores_de_conflicto(html)
-    revisar_archivos_prohibidos()
 
     if BASE_CSS.exists():
         revisar_accesibilidad_css(BASE_CSS.read_text(encoding="utf-8", errors="replace"))

@@ -11,6 +11,37 @@
   --mono: "SFMono-Regular", "JetBrains Mono", "Fira Code", Consolas, monospace;
 }
 
+:root {
+  --contraste-alto: #eaffef;
+  --foco: 3px solid var(--acento);
+}
+
+*:focus-visible {
+  outline: var(--foco);
+  outline-offset: 3px;
+}
+
+.salto-contenido {
+  position: absolute;
+  left: -9999px;
+  background: var(--acento);
+  color: #04160a;
+  padding: 0.6rem 1rem;
+  z-index: 10;
+}
+
+.salto-contenido:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parpadeo,
+  .crt::after {
+    animation: none !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

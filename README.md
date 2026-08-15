@@ -24,7 +24,7 @@ Van a usarla igual, así que hablemos claro: **está permitida**. Úsenla para a
 Lo que no les va a resolver son dos cosas:
 
 1. **La información que necesitan no existe fuera de este repositorio.** No está en internet y no se deduce razonando. Está guardada dentro de un archivo que van a tener que aprender a abrir con Git.
-2. **La entrega no es un archivo: es un historial.** Se corrige la forma del grafo de commits que ustedes construyan — que haya merges de verdad y un revert trazable. Eso no se pega desde un chat: se hace.
+2. **La entrega no es un archivo: es un historial.** Se corrige la forma del grafo de commits que ustedes construyan — que haya merges de verdad y un conflicto resuelto entre los tres. Eso no se pega desde un chat: se hace.
 
 > 🎯 **Regla de oro:** cada hallazgo se documenta con el comando exacto que lo produjo. Si no pueden reproducirlo delante de un TA, no cuenta.
 
@@ -38,7 +38,7 @@ Los equipos son de **3 integrantes fijos**. Repártanse estos roles al empezar:
 |---|---|
 | 🧭 **Líder** | Crea el repositorio y los issues, revisa y mergea los PR, conduce la resolución del conflicto. |
 | 🔎 **Arqueólogo** | Busca los dos fragmentos perdidos en la historia. |
-| 🧰 **Cirujano** | Encuentra el commit que rompió el sitio, lo revierte y deja el despliegue vivo. |
+| 🧰 **Integrador de la web** | Completa la página, deja la auditoría en verde y el despliegue vivo. |
 
 Los roles no son excusas: **los tres deben tener commits, PRs y revisiones**. La corrección lo verifica commit por commit.
 
@@ -51,14 +51,13 @@ En 60 minutos no hay margen para improvisar el orden. Este reparto está medido:
 | Tiempo | Qué |
 |---|---|
 | 0:00 – 0:12 | Issue **#1** — Crear el repo, configurarlo y montar la cinta |
-| 0:12 – 0:27 | Issue **#2** — Los dos fragmentos (uno cada uno, el tercero ayuda) |
-| 0:27 – 0:37 | Issue **#3** — Encontrar y revertir el commit que rompió el sitio |
-| 0:37 – 0:52 | Issue **#4** — Datos personales y el conflicto |
-| 0:52 – 1:00 | Issue **#5** — Sello, informe, etiqueta y despliegue |
+| 0:12 – 0:30 | Issue **#2** — Los dos fragmentos y el glifo |
+| 0:30 – 0:48 | Issue **#3** — Datos personales y el conflicto |
+| 0:48 – 1:00 | Issue **#4** — Sello, informe, etiqueta y despliegue |
 
 > ⚡ **Hagan esto antes de que arranque el cronómetro:** que el líder cree el repositorio e invite a los otros dos, y que **ellos acepten la invitación**. Si la aceptan a mitad de sesión, pierden diez minutos sin poder abrir un solo PR.
 
-Si a los 27 minutos les falta un fragmento, **salten al issue #3 y vuelvan después**. El commit tóxico bloquea el despliegue: sin eso no hay nota de entrega.
+Si a los 30 minutos les falta un fragmento, **salten al issue #3 igual**: las tarjetas y el despliegue valen más que el fragmento que falta, y el conflicto necesita a los tres a la vez.
 
 ---
 
@@ -67,14 +66,12 @@ Si a los 27 minutos les falta un fragmento, **salten al issue #3 y vuelvan despu
 Un TA (que no diremos quién 🤫) volvió a meter mano en el repositorio, pero esta vez se le fue la mano de verdad. Ejecutó un script de "limpieza" sobre el **ARCHIVO 2031**, una terminal web con la bitácora del proyecto, y lo que ustedes heredan es el escombro:
 
 - La bitácora está vacía: sus **fragmentos** desaparecieron del árbol de trabajo.
-- Un commit rompió el sitio y nadie sabe cuál fue.
-- `styles/base.css` perdió su bloque de accesibilidad.
 - El glifo del sello no está por ningún lado.
 - Las tarjetas del equipo siguen con datos de relleno.
 
 Pero del repositorio original quedó **una cinta de respaldo**: el archivo `incidente/equipo-<X>.bundle`. Ahí adentro está toda la historia previa al incidente.
 
-🎯 **Tu objetivo:** montar la cinta, recuperar los **dos fragmentos** del sello, deshacer el daño y desplegar la página en **GitHub Pages**.
+🎯 **Tu objetivo:** montar la cinta, recuperar los **dos fragmentos** del sello y el glifo, completar el equipo y desplegar la página en **GitHub Pages**.
 
 Cuando las dos palabras estén en su sitio, la terminal se sella sola y su estado pasa de `INCOMPLETO` a `RESTAURADO`.
 
@@ -154,27 +151,7 @@ Y de paso: **el glifo del sello** (`assets/sello.svg`) también se perdió, y es
 
 ---
 
-### #3 — El commit que rompió el sitio (1 PR)
-
-Uno de los commits de la cinta rompió la página, y el daño lo heredaron ustedes. No les vamos a decir cuál. Sí les damos el detector:
-
-```bash
-python3 scripts/audit.py     # 0 = sano, 1 = roto
-```
-
-Ese script es **idéntico en todos los commits de la cinta**. No es casualidad: sirve como oráculo para encontrar al culpable sin leer la historia entera. Busquen `git bisect` — está hecho exactamente para esto. Si se les complica, cualquier método vale, pero cuéntenlo en el informe.
-
-Después, **reviertan ese commit sobre su propia rama**:
-
-```bash
-git revert <sha-del-commit-de-la-cinta>
-```
-
-Sí, funciona aunque ese commit no sea ancestro suyo: `revert` aplica el parche inverso. No vale borrar los archivos a mano — queremos ver el revert en el historial, y el mensaje que Git genera lleva dentro el SHA revertido.
-
----
-
-### #4 — Datos personales (1 PR por persona)
+### #3 — Datos personales (1 PR por persona)
 
 Cada integrante, **en su propia rama** `feat/member-<nombre>`, hace dos cosas en `index.html`:
 
@@ -204,7 +181,7 @@ Ejemplo de tarjeta correctamente completada:
 
 ---
 
-### #5 — Sello, informe y entrega (1 PR)
+### #4 — Sello, informe y entrega (1 PR)
 
 1. Escriban las dos palabras en las dos ranuras de `index.html`.
 2. Escriban el sello completo en `#sello-valor`. La página se verifica sola: si es correcto, el estado pasa a **RESTAURADO**.
@@ -235,7 +212,7 @@ FRAG-02: PALABRA
 SELLO: PALABRA-PALABRA
 ```
 
-`bitacora/INFORME.md`: una tabla de tres filas, sin prosa. Una por fragmento y una por el commit tóxico.
+`bitacora/INFORME.md`: una tabla de tres filas, sin prosa. Una por fragmento y una por el glifo.
 
 ```markdown
 | Hallazgo | Dónde estaba | Técnica de Git | Comando exacto | Referencia |
@@ -247,11 +224,18 @@ SELLO: PALABRA-PALABRA
 
 ### ✅ Publicado en GitHub Pages
 
-El deploy es **automático** gracias al workflow `.github/workflows/pages.yml`. Cada push a `main` despliega la página.
+El deploy es **automático** gracias al workflow `.github/workflows/pages.yml`. Cada push a `main` despliega la página. Solo hay que habilitarlo una vez: **Settings → Pages → Source: GitHub Actions**.
 
-Eso sí: ese workflow **corre la auditoría antes de desplegar**. Mientras el sitio siga roto, no se publica nada. Es intencional.
+La URL aparece en **Settings → Pages** y en la pestaña **Environments → github-pages**. Cópienla al `README.md`.
 
-Solo necesitan habilitarlo una vez: **Settings → Pages → Source: GitHub Actions**. La URL aparece en la pestaña **Environments → github-pages**.
+> ⚠️ **Las cuatro cosas que hacen fallar Pages**, por orden de frecuencia:
+>
+> 1. **El repositorio es privado.** Pages en repos privados requiere plan de pago y sus cuentas son gratuitas. Tiene que ser **Public**.
+> 2. **No cambiaron el *Source* a GitHub Actions.** Si lo dejan en "Deploy from a branch", el workflow corre pero no publica nada.
+> 3. **La auditoría falla.** `pages.yml` corre `scripts/audit.py` antes de desplegar y **se niega a publicar un sitio roto**. Si rompieron un enlace o borraron un `alt`, no hay deploy. Arréglenlo y vuelva a pushear.
+> 4. **Acaban de desplegar.** El primer build tarda **uno o dos minutos** y hasta que termina la URL devuelve 404. No es un error: esperen y recarguen.
+>
+> Si `autocheck` les dice que Pages no responde, mírenlo con calma: les dice cuál de estos cuatro casos es.
 
 ---
 
@@ -283,7 +267,7 @@ No vale `--ours`, no vale `--theirs`, y no vale borrar el nombre del otro para v
 |---|---|---|---|
 | `feat/member-<nombre>` | Cada integrante | Datos personales | 1 por persona |
 | `arqueo/fragmentos` | Arqueólogo | Los dos fragmentos y el glifo | 1 PR |
-| `fix/cirugia` | Cirujano | Revert del commit tóxico | 1 PR |
+| `feat/sello` | Líder | Sello, informe y entrega | 1 PR |
 
 > Los nombres son sugerencias, salvo `feat/member-<nombre>`, que sí se revisa. Lo que **no** es negociable: todo entra por Pull Request, y esperamos **al menos 3 PR mergeados**.
 
@@ -355,12 +339,11 @@ Lo que sí pueden (y deben) tocar es todo lo demás: `index.html`, `styles/`, `b
 
 | Bloque | Pts | Qué se mide |
 |---|---|---|
-| **A · Historia propia** | 25 | Raíz propia y ≥8 commits · los 3 integrantes con ≥2 commits · ≥3 merge commits (nada de squash) · al menos un merge que integra un conflicto real · las 3 ramas `feat/member-*`. |
-| **B · Los fragmentos** | 25 | FRAG-01 y FRAG-02 transcritos sin una sola alteración (10 c/u) · sello correcto (5). |
-| **C · El commit tóxico** | 15 | Revert trazable que apunta al commit correcto (9) y daño reparado (6). |
-| **D · Sitio** | 15 | Auditoría en verde · ranuras y sello en la página · glifo recuperado · 3 tarjetas y turno de guardia. |
-| **E · Entrega** | 15 | Etiqueta anotada con el sello (5) · ≥3 PR mergeados (4) · revisión cruzada (3) · Pages vivo (3). |
-| **F · Informe** | 5 | La tabla con técnica, comando y referencia por hallazgo. |
+| **A · Historia propia** | 25 | Historia independiente de la cinta y ≥8 commits del equipo · los 3 integrantes con ≥2 commits · ≥3 merge commits (nada de squash) · al menos un merge que integra un conflicto real · las 3 ramas `feat/member-*`. |
+| **B · Los fragmentos** | 30 | FRAG-01 y FRAG-02 transcritos sin una sola alteración (12 c/u) · sello correcto (6). |
+| **C · Sitio** | 20 | Auditoría en verde (5) · ranuras y sello en la página (5) · glifo recuperado (5) · 3 tarjetas y turno de guardia (5). |
+| **D · Entrega** | 20 | Etiqueta anotada con el sello (6) · ≥3 PR mergeados (5) · revisión cruzada (5) · Pages vivo (4). |
+| **E · Informe** | 5 | La tabla con técnica, comando y referencia por hallazgo. |
 
 ## 🚫 Descalificaciones
 
@@ -390,8 +373,6 @@ git checkout <ref> -- <ruta>
 git tag -n99
 git tag -a <nombre> -m '<mensaje>'
 git cat-file -t | -p <objeto>
-git bisect start | bad | good | run <comando>
-git revert <sha>
 git merge-base <a> <b>
 git reflog
 ```

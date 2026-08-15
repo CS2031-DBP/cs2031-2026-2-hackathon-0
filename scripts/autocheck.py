@@ -134,9 +134,10 @@ informe = leer("bitacora/INFORME.md")
 citados = len(set(re.findall(r"FRAG-0[1-6]", informe.upper())))
 comandos = len(re.findall(r"git\s+[a-z-]+", informe))
 check(
-    citados >= FRAGMENTOS_SELLO and comandos >= 5,
+    citados >= FRAGMENTOS_SELLO and comandos >= CLAVES["min_comandos_informe"],
     "INFORME.md documenta cada hallazgo con su comando",
-    f"fragmentos citados: {citados}/{FRAGMENTOS_SELLO}, comandos: {comandos}",
+    f"fragmentos citados: {citados}/{FRAGMENTOS_SELLO}, "
+    f"comandos: {comandos}/{CLAVES['min_comandos_informe']}",
 )
 
 # --- 7. Entrega ---------------------------------------------------------------
@@ -193,20 +194,27 @@ else:
             f"con revisión cruzada: {con_revision}/{len(mergeados)}",
         )
 
-        url = ""
+        url, pista = "", ""
         try:
             pages = gh(f"repos/{slug}/pages")
-            url = pages.get("html_url", "") if isinstance(pages, dict) else ""
+            if isinstance(pages, dict):
+                url = pages.get("html_url", "")
         except RuntimeError:
-            url = ""
+            pista = "Pages no está activado: Settings → Pages → Source: GitHub Actions"
         vivo = False
         if url:
             try:
                 with urllib.request.urlopen(url, timeout=15) as resp:
                     vivo = resp.status == 200
+                pista = url
+            except urllib.error.HTTPError as exc:
+                pista = (f"{url} devuelve {exc.code}: si acaban de desplegar, "
+                         "el primer build tarda un par de minutos")
             except (urllib.error.URLError, TimeoutError, OSError):
-                vivo = False
-        check(vivo, "GitHub Pages publicado y respondiendo", url or "Pages no está activo")
+                pista = f"{url} no responde todavía"
+        elif not pista:
+            pista = "Pages activado pero aún sin URL: esperen al primer despliegue"
+        check(vivo, "GitHub Pages publicado y respondiendo", pista)
     except RuntimeError as exc:
         omitido_github = f"La CLI de GitHub no pudo consultar {slug}: {exc}"
 
