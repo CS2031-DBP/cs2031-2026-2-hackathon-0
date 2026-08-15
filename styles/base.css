@@ -161,6 +161,10 @@ h1, h2, h3 {
   color: var(--alerta);
 }
 
+.hero__estado--ok {
+  color: var(--acento);
+}
+
 .bitacora__lista {
   list-style: none;
   margin: 0;

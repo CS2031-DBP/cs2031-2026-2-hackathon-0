@@ -42,6 +42,17 @@ def revisar_imagenes(html: str) -> None:
             fallas.append("imagen con atributo alt vacío")
 
 
+def revisar_recursos_locales(html: str) -> None:
+    """Una hoja de estilos o un script que apunta a la nada rompe la página."""
+    refs = re.findall(r'<link[^>]*\brel="stylesheet"[^>]*\bhref="([^"]+)"', html)
+    refs += re.findall(r'<script[^>]*\bsrc="([^"]+)"', html)
+    for ref in refs:
+        if ref.startswith(("http://", "https://", "//", "data:")):
+            continue
+        if not (RAIZ / ref).exists():
+            fallas.append(f"recurso enlazado que no existe: {ref}")
+
+
 def revisar_marcadores_de_conflicto(html: str) -> None:
     for marcador in ("<<<<<<<", "=======", ">>>>>>>"):
         if re.search(rf"^{re.escape(marcador)}", html, flags=re.MULTILINE):
@@ -67,6 +78,7 @@ def main() -> int:
     html = INDEX.read_text(encoding="utf-8", errors="replace")
     revisar_enlaces_internos(html)
     revisar_scripts_externos(html)
+    revisar_recursos_locales(html)
     revisar_imagenes(html)
     revisar_marcadores_de_conflicto(html)
 

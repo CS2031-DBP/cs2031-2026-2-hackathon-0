@@ -40,7 +40,8 @@
 
     var meta = document.querySelector('meta[name="equipo"]');
     var equipo = meta ? (meta.getAttribute("content") || "").trim().toUpperCase() : "";
-    var sello = (campo.textContent || "").trim().toUpperCase();
+    var sello = (campo.textContent || "")
+      .trim().toUpperCase().replace(/\s*-\s*/g, "-");
     var llenas = ranurasLlenas();
 
     if (!equipo || equipo === "???") {
@@ -65,7 +66,10 @@
           estado("sello__estado--ok", "✓ SELLO VERIFICADO · archivo restaurado.");
           document.documentElement.setAttribute("data-sello", "ok");
           var badge = document.querySelector(".hero__estado");
-          if (badge) badge.textContent = "RESTAURADO";
+          if (badge) {
+            badge.textContent = "RESTAURADO";
+            badge.classList.add("hero__estado--ok");
+          }
         } else {
           estado(
             "sello__estado--error",

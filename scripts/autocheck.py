@@ -39,9 +39,14 @@ def check(ok: bool, titulo: str, ayuda: str = "") -> None:
     resultados.append((bool(ok), titulo, ayuda))
 
 
+def normalizar_sello(texto: str) -> str:
+    """`PALABRA - PALABRA` y `palabra-palabra` valen igual."""
+    return re.sub(r"\s*-\s*", "-", texto.strip().upper().lstrip("\ufeff"))
+
+
 def leer(rel: str) -> str:
     p = RAIZ / rel
-    return p.read_text(encoding="utf-8", errors="replace") if p.exists() else ""
+    return p.read_text(encoding="utf-8-sig", errors="replace") if p.exists() else ""
 
 
 def git(*args: str) -> str:
@@ -112,14 +117,15 @@ check(
 )
 
 # --- 5. Sello -----------------------------------------------------------------
-m_sello = re.search(r"^SELLO:\s*(.+)$", leer("bitacora/SELLO.txt"), flags=re.MULTILINE)
-sello = m_sello.group(1).strip().upper() if m_sello else ""
+m_sello = re.search(r"^\s*SELLO\s*:\s*(.+)$", leer("bitacora/SELLO.txt"),
+                    flags=re.MULTILINE | re.IGNORECASE)
+sello = normalizar_sello(m_sello.group(1)) if m_sello else ""
 sello_ok = bool(sello) and hashlib.sha256(sello.encode()).hexdigest() == SELLO_SHA256
 check(sello_ok, "el sello es CORRECTO", "hash no coincide" if sello else "falta la línea SELLO:")
 
 m_html = re.search(r'id="sello-valor"[^>]*>([^<]*)<', html)
 check(
-    sello_ok and bool(m_html) and m_html.group(1).strip().upper() == sello,
+    sello_ok and bool(m_html) and normalizar_sello(m_html.group(1)) == sello,
     "index.html muestra el sello correcto",
 )
 
