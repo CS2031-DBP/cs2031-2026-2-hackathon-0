@@ -84,6 +84,7 @@ Cuando las dos palabras estén en su sitio, la terminal se sella sola y su estad
   >
   > Van a recibir un repositorio con **un solo commit**: el suyo. Eso es correcto y es el punto — **su historial empieza en cero y lo construyen ustedes.** La historia que van a investigar viaja aparte, en la cinta.
 - El líder da acceso de colaborador a los otros 2 integrantes, y ellos **aceptan la invitación**.
+- En `Settings → Pages → Source`: seleccionen **GitHub Actions**. Sin esto no hay despliegue.
 - En `Settings → General → Pull Requests`: **desactiven "Allow squash merging"**. El squash aplasta el trabajo de sus compañeros y la corrección lo penaliza.
 - Cada integrante trabaja en **su propia rama** y abre un **PR** para que otro lo revise y acepte. **Nadie se auto-aprueba.**
 - Esperamos **al menos 3 PR mergeados**. El conflicto se resuelve en equipo, **no individualmente**.
@@ -223,17 +224,27 @@ SELLO: PALABRA-PALABRA
 
 ### ✅ Publicado en GitHub Pages
 
-El deploy es **automático** y **no tienen que configurar nada**: el workflow `.github/workflows/pages.yml` activa GitHub Pages por su cuenta en el primer push a `main` y publica la página.
+El deploy es **automático** gracias al workflow `.github/workflows/pages.yml`: cada push a `main` publica la página. Pero **hay que activarlo una vez**, y es el paso que más se olvida:
+
+**`Settings` → `Pages` → en *Source*, elegir `GitHub Actions`.** Háganlo al principio, junto con lo demás de la Fase 0.
+
+Hasta que lo hagan, el workflow de despliegue va a fallar con este mensaje, que es normal y les dice exactamente qué falta:
+
+```
+Get Pages site failed. Please verify that the repository has Pages
+enabled and configured to build using GitHub Actions
+```
 
 La URL aparece en **Settings → Pages** y en la pestaña **Environments → github-pages**. Cópienla al `README.md`.
 
-> ⚠️ **Las tres cosas que hacen fallar Pages**, por orden de frecuencia:
+> ⚠️ **Las cuatro cosas que hacen fallar Pages**, por orden de frecuencia:
 >
-> 1. **El repositorio es privado.** Pages en repos privados requiere plan de pago y sus cuentas son gratuitas. Tiene que ser **Public** — es el paso que más se olvida.
-> 2. **La auditoría falla.** `pages.yml` corre `scripts/audit.py` antes de desplegar y **se niega a publicar un sitio roto**. Si rompieron un enlace o borraron un `alt`, no hay deploy. Arréglenlo y vuelvan a pushear.
-> 3. **Acaban de desplegar.** El primer build tarda **uno o dos minutos** y hasta que termina la URL devuelve 404. No es un error: esperen y recarguen.
+> 1. **No activaron Pages** con *Source: GitHub Actions*. Es lo de arriba.
+> 2. **El repositorio es privado.** Pages en repos privados requiere plan de pago y sus cuentas son gratuitas. Tiene que ser **Public**.
+> 3. **La auditoría falla.** `pages.yml` corre `scripts/audit.py` antes de desplegar y **se niega a publicar un sitio roto**. Si rompieron un enlace o borraron un `alt`, no hay deploy. Arréglenlo y vuelvan a pushear.
+> 4. **Acaban de desplegar.** El primer build tarda **uno o dos minutos** y hasta que termina la URL devuelve 404. No es un error: esperen y recarguen.
 >
-> Si `autocheck` les dice que Pages no responde, léanlo: distingue estos tres casos.
+> Si `autocheck` les dice que Pages no responde, léanlo: distingue estos casos.
 
 ---
 
