@@ -228,12 +228,7 @@ El deploy es **automático** gracias al workflow `.github/workflows/pages.yml`: 
 
 **`Settings` → `Pages` → en *Source*, elegir `GitHub Actions`.** Háganlo al principio, junto con lo demás de la Fase 0.
 
-Hasta que lo hagan, el workflow de despliegue va a fallar con este mensaje, que es normal y les dice exactamente qué falta:
-
-```
-Get Pages site failed. Please verify that the repository has Pages
-enabled and configured to build using GitHub Actions
-```
+Hasta que lo hagan, el workflow de despliegue **no falla**: se queda quieto y les deja un aviso amarillo diciendo justo eso. Nada de X rojas por algo que todavía no tenían por qué haber hecho.
 
 La URL aparece en **Settings → Pages** y en la pestaña **Environments → github-pages**. Cópienla al `README.md`.
 
